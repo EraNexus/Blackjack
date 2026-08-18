@@ -15,5 +15,6 @@ public:
     std::vector<std::string> buildDeck();
     void printDeck(std::vector<std::string>& deck);
     int cardValue(std::string card);
+    bool hasAce(vector<string>& deck);
 };
 #endif

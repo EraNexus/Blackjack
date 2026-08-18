@@ -61,3 +61,37 @@ int Card::cardValue(string card) {
 
     return 10;
 }
+
+bool Card::hasAce(vector<string>& deck) {
+    for (int i = 0; i < deck.size(); i++) {
+        if (deck[i].substr(0, 3) == "Ace") return true;
+    }
+
+    return false;
+}
+
+int Card::cardValueTotal(vector<string>& deck) {
+    int total = 0;
+    int aces = 0;
+
+    for (int i = 0; i < deck.size(); i++) {
+        total += cardValue(deck[i]);
+    }
+
+    while (total > 21 && hasAce(deck)) {
+        aces = countAces(deck);
+    }
+
+    return total;
+}
+
+int Card::countAces(vector<string> deck) {
+    int aces = 0;
+
+    for (int i = 0; i < deck.size(); i++) {
+        if (deck[i].substr(0, 3) == "Ace")
+            aces++;
+    }
+
+    return aces;
+}
