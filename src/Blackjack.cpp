@@ -12,7 +12,7 @@
 using namespace std;
 
 void Blackjack::startGame() {
-    vector<string> deck = c.buildDeck();
+    deck = c.buildDeck();
 
     cout << "Welcome to Blackjack!" << endl;
     cout << "The minimum wager is $5.00" << endl;
@@ -39,9 +39,9 @@ string Blackjack::cardsShowing(double wagerAmount, int state) {
     // State 3 is
 
     cout << "Dealer is showing: " << dealerHand[1] << " and one more card";
-    cout << "Dealer card value total: " << dealerHand.cardValueTotal();
+    cout << "Dealer card value total: " << c.cardValueTotal(dealerHand);
 
-    if (c.cardValue((dealerHand[1]) == 1) && (state == 0))
+    if (c.cardValue(dealerHand[1]) == 1 && state == 0)
         offerInsurance();
 
     cout << "You are showing: " << endl;
@@ -53,7 +53,7 @@ string Blackjack::cardsShowing(double wagerAmount, int state) {
     cout << "Hit" << endl;
     cout << "Stand" << endl;
 
-    if ((playerHand[0].cardValue() == playerHand[1].cardValue()) 
+    if ((c.cardValue(playerHand[0]) == c.cardValue(playerHand[1])) 
         && ((state == 0) || (state == 1) || (state == 2)))
         cout << "Split" << endl;
     if ((p.purse >= wagerAmount * 2)
@@ -75,17 +75,18 @@ void Blackjack::playerDecision(double wagerAmount, int state) {
         p.hit(playerHand, deck);
     else if ((decision == "Stand") || (decision == "stand"))
         p.stand(playerHand, deck);
-    else if ((decision == "Split") || (decision == "split") 
-            && ((state == 0) || (state == 1) || (state == 2)))
+    else if ((decision == "Split") || (decision == "split")
+            && ((state == 0) || (state == 1) || (state == 2))) {
         p.split(playerHand, deck, 0);
         p.split(playerHand, deck, 1);
+    }
     else if ((decision == "Double Down") || (decision == "double down")
             && ((state == 0) || (state == 1) || (state == 3))
             && (p.purse >= wagerAmount * 2))
         p.doubleDown(playerHand, deck);
     else {
         cout << "Invalid decision, please select from the available options" << endl;
-        playerDecision();
+        playerDecision(wagerAmount, state);
     }
 }
 
@@ -113,7 +114,7 @@ void Blackjack::offerInsurance(double wagerAmount) {
 
             p.purse += 3 * sideBet;
 
-            if (dealerHand.cardValueTotal == playerHand.cardValueTotal)
+            if (c.cardValueTotal(dealerHand) == c.cardValueTotal(playerHand))
                 push(wagerAmount);
             else
                 loss(wagerAmount);

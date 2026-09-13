@@ -13,7 +13,6 @@ vector<string> Dealer::initialDeal(vector<string>& hand, vector<string>& deck) {
         int x = rand() % deck.size();
         hand.push_back(deck[x]);
         deck.erase(deck.begin() + x);
-        hand.cardValueTotal += hand[0];
     }
 
     return hand;
@@ -24,7 +23,6 @@ vector<string> Dealer::hit(vector<string>& hand, vector<string>& deck) {
     int x = rand() % deck.size();
     hand.push_back(deck[x]);
     deck.erase(deck.begin() + x);
-    hand.cardValueTotal += hand[0];
 
     return hand;
 }
@@ -35,9 +33,9 @@ vector<string> Dealer::stand(vector<string>& hand, vector<string>& deck) {
 }
 
 bool Dealer::isUnder17(vector<string>& hand) {
-    return (hand.cardValueTotal < 17);
+    return cardValueTotal(hand) < 17;
 }
 
 bool Dealer::isOver21(vector<string>& hand) {
-    return (hand.cardValueTotal > 21);
+    return cardValueTotal(hand) > 21;
 }
