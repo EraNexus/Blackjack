@@ -9,6 +9,7 @@ class Blackjack {
 public:
     std::vector<std::string> playerHand;
     std::vector<std::string> dealerHand;
+    std::vector<std::string> splitHand;
     std::vector<std::string> deck;
 
     Card c;

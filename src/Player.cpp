@@ -34,12 +34,20 @@ vector<string> Player::stand(vector<string>& hand, vector<string>& deck) {
     return hand;
 }
 
-vector<string> Player::split(vector<string>& hand, vector<string>& deck, int index) {
+vector<string> Player::split(vector<string>& hand, vector<string>& deck) {
     // Hand is split in two
-    vector<string> halfHand;
-    halfHand.push_back(hand[index]);
+    vector<string> splitHand;
 
-    return halfHand;
+    splitHand.push_back(hand[1]);
+    hand.erase(hand.begin() + 1);
+
+    splitHand.push_back(deck.back());
+    deck.pop_back();
+
+    hand.push_back(deck.back());
+    deck.pop_back();
+
+    return splitHand;
 }
 
 vector<string> Player::doubleDown(vector<string>& hand, vector<string>& deck) {

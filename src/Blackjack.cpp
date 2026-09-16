@@ -32,6 +32,13 @@ void Blackjack::startGame() {
     cout << "Starting game... " << endl;
     p.initialDeal(playerHand, deck);
     d.initialDeal(dealerHand, deck);
+
+    if (c.cardValueTotal(playerHand) == 21 
+            && c.cardValue(dealerHand[1]) != 1) {
+        blackjack(wagerAmount);
+        return;
+    }
+
     cardsShowing(wagerAmount, 0);
 }
 
@@ -46,6 +53,7 @@ void Blackjack::cardsShowing(double wagerAmount, int state) {
 
     if (c.cardValue(dealerHand[1]) == 1 && state == 0)
         offerInsurance(wagerAmount);
+        return;
 
     cout << "You are showing: " << endl;
     for (int i = 0; i < playerHand.size(); i++) {
@@ -59,9 +67,8 @@ void Blackjack::cardsShowing(double wagerAmount, int state) {
     if ((c.cardValue(playerHand[0]) == c.cardValue(playerHand[1])) 
         && ((state == 0) || (state == 1) || (state == 2)))
         cout << "Split" << endl;
-    if ((p.purse >= wagerAmount)
-        && ((state == 0) || (state == 1) || (state == 3)))
-        cout << "Double Down \n" << endl;
+    if (p.purse >= wagerAmount && state == 0)
+        cout << "Double" << endl;
 
     cout << "Purse: $" << p.purse;
 
@@ -84,15 +91,22 @@ void Blackjack::playerDecision(double wagerAmount, int state) {
     }
     else if ((decision == "Stand") || (decision == "stand"))
         dealerTurn(wagerAmount);
-    else if else if (((decision == "Split") || (decision == "split"))
-        && ((state == 0) || (state == 1) || (state == 2))) { {
-        p.split(playerHand, deck, 0);
-        p.split(playerHand, deck, 1);
+    else if (((decision == "Split") || (decision == "split"))
+            && ((state == 0) || (state == 1) || (state == 2))) {
+        p.purse -= wagerAmount;
+        splitHand = p.split(playerHand, deck);
     }
-    else if else if (((decision == "Double Down") || (decision == "double down"))
-            && ((state == 0) || (state == 1) || (state == 3))
-            && (p.purse >= wagerAmount))
-        p.doubleDown(playerHand, deck);
+    else if (((decision == "Double") || (decision == "double"))
+                && state == 0
+                && p.purse >= wagerAmount) {
+            p.purse -= wagerAmount;
+            p.doubleDown(playerHand, deck);
+
+            if (p.isOver21(playerHand))
+                loss(wagerAmount * 2);
+            else
+                dealerTurn(wagerAmount * 2);
+    }
     else {
         cout << "Invalid decision, please select from the available options" << endl;
         playerDecision(wagerAmount, state);
@@ -119,39 +133,53 @@ void Blackjack::dealerTurn(double wagerAmount) {
 
 void Blackjack::offerInsurance(double wagerAmount) {
     string answer;
+    bool tookInsurance = false;
 
     cout << "The dealer is showing an Ace, would you like to take insurance? [Y/N]" << endl;
     cin >> answer;
 
+    while (answer != "Yes" && answer != "yes" &&
+            answer != "Y" && answer != "y" &&
+            answer != "No" && answer != "no" &&
+            answer != "N" && answer != "n") {
+    cout << "Invalid decision, please select from the available options" << endl;
+    cin >> answer;
+    }
+
     if (answer == "Yes" || answer == "yes" || answer == "Y" || answer == "y") {
-        cout << "How much would you like to wager? (up to half the original wager)";
+        tookInsurance = true;
+
+        cout << "How much would you like to wager? (up to half the original wager)" << endl;
         cin >> sideBet;
-        
-        while (sideBet <= 0 || sideBet >= p.purse || sideBet > 0.5 * wagerAmount) {
+
+        while (sideBet <= 0 || sideBet > p.purse || sideBet > 0.5 * wagerAmount) {
             cout << "Please enter a valid amount" << endl;
             cin >> sideBet;
         }
 
         p.purse -= sideBet;
-
-        if (c.cardValue(dealerHand[0]) == 10) {
-            cout << "The dealer reveals: " << dealerHand[0] << endl;
-            cout << "Therefore, the dealer has Blackjack" << endl;
-            cout << "Insurance pays 2:1, you win $" << sideBet;
-
-            p.purse += 3 * sideBet;
-
-            if (c.cardValueTotal(dealerHand) == c.cardValueTotal(playerHand))
-                push(wagerAmount);
-            else
-                loss(wagerAmount);
-        }
-        else {
-            cardsShowing(wagerAmount, 1);
-        }
     }
-    else
+
+    if (c.cardValue(dealerHand[0]) == 10) {
+        cout << "The dealer reveals: " << dealerHand[0] << endl;
+        cout << "Therefore, the dealer has Blackjack" << endl;
+
+        if (tookInsurance) {
+            cout << "Insurance pays 2:1, you win $" << sideBet * 2 << endl;
+            p.purse += 3 * sideBet;
+        }
+
+        if (c.cardValueTotal(playerHand) == 21)
+            push(wagerAmount);
+        else
+            loss(wagerAmount);
+    }
+    else if (c.cardValueTotal(playerHand) == 21) {
+        blackjack(wagerAmount);
+    }
+    else {
         cardsShowing(wagerAmount, 1);
+    }
 }
 
 void Blackjack::push(double wagerAmount) {

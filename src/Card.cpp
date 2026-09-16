@@ -72,15 +72,14 @@ bool Card::hasAce(vector<string>& deck) {
 
 int Card::cardValueTotal(vector<string>& deck) {
     int total = 0;
-    int aces = 0;
+    int aces = countAces(deck);
 
     for (int i = 0; i < deck.size(); i++) {
         total += cardValue(deck[i]);
     }
 
-    while (total > 21 && hasAce(deck)) {
-        aces = countAces(deck);
-    }
+    if (aces > 0 && total + 10 <= 21)
+        total += 10;
 
     return total;
 }
