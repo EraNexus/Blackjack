@@ -19,9 +19,12 @@ public:
     Player p;
     Dealer d;
 
+    std::string option;
     double wagerAmount = 0.00;
     double sideBet = 0.00;
 
+    void startup();
+    void debug();
     void startGame();
     void cardsShowing(std::vector<std::string>& hand, double wagerAmount, int state);
     void playerDecision(std::vector<std::string>& hand, double wagerAmount, int state);

@@ -11,6 +11,117 @@
 
 using namespace std;
 
+void Blackjack::startup() {
+    cout << " ========== WELCOME TO BLACKJACK! ==========" << endl;
+    cout << endl;
+    cout << "  PLEASE SELECT FROM THE AVAILABLE OPTIONS: " << endl;
+    cout << endl;
+    cout << "  PLAY             DEBUG               QUIT" << endl; 
+    cout << endl;
+    cout << " ===========================================" << endl;
+    
+    cin >> option;
+
+    bool validOption = false;
+
+    do {
+        if (option == "PLAY" || option == "Play" || option == "play") {
+            validOption = true;
+            startGame();
+        }
+        else if (option == "DEBUG" || option == "Debug" || option == "debug") {
+            validOption = true;
+            debug();
+        }
+        else if (option == "QUIT" || option == "Quit" || option == "quit") {
+            validOption = true;
+            return;
+        }
+        else {
+            cout << "Invalid option. Please select from the options above" << endl;
+            cin >> option;
+        }
+    }
+    while (!validOption);
+}
+
+void Blackjack::debug() {
+    string debugOption;
+
+    cout << " ============ DEBUG MODE ============" << endl;
+    cout << endl;
+    cout << "  SELECT A SCENARIO TO TEST:" << endl;
+    cout << endl;
+    cout << "  BLACKJACK" << endl;
+    cout << "  SPLIT" << endl;
+    cout << "  INSURANCE" << endl;
+    cout << "  DOUBLE" << endl;
+    cout << "  BUST" << endl;
+    cout << "  BACK" << endl;
+    cout << endl;
+    cout << " ====================================" << endl;
+
+    cin >> debugOption;
+
+    playerHand.clear();
+    dealerHand.clear();
+    splitHand.clear();
+    deck = c.buildDeck();
+
+    if (debugOption == "BLACKJACK" || debugOption == "blackjack") {
+        playerHand.push_back("Ace of Spades");
+        playerHand.push_back("King of Hearts");
+
+        dealerHand.push_back("Seven of Clubs");
+        dealerHand.push_back("Nine of Diamonds");
+
+        cardsShowing(playerHand, 10, 0);
+    }
+    else if (debugOption == "SPLIT" || debugOption == "split") {
+        playerHand.push_back("Eight of Spades");
+        playerHand.push_back("Eight of Hearts");
+
+        dealerHand.push_back("Seven of Clubs");
+        dealerHand.push_back("Nine of Diamonds");
+
+        cardsShowing(playerHand, 10, 0);
+    }
+    else if (debugOption == "INSURANCE" || debugOption == "insurance") {
+        playerHand.push_back("Ten of Spades");
+        playerHand.push_back("Seven of Hearts");
+
+        dealerHand.push_back("King of Clubs");
+        dealerHand.push_back("Ace of Diamonds");
+
+        cardsShowing(playerHand, 10, 0);
+    }
+    else if (debugOption == "DOUBLE" || debugOption == "double") {
+        playerHand.push_back("Five of Spades");
+        playerHand.push_back("Six of Hearts");
+
+        dealerHand.push_back("Seven of Clubs");
+        dealerHand.push_back("Nine of Diamonds");
+
+        cardsShowing(playerHand, 10, 0);
+    }
+    else if (debugOption == "BUST" || debugOption == "bust") {
+        playerHand.push_back("King of Spades");
+        playerHand.push_back("Six of Hearts");
+
+        dealerHand.push_back("Seven of Clubs");
+        dealerHand.push_back("Nine of Diamonds");
+
+        cardsShowing(playerHand, 10, 0);
+    }
+    else if (debugOption == "BACK" || debugOption == "back") {
+        startup();
+    }
+    else {
+        cout << "Invalid debug option" << endl;
+        debug();
+    }
+}
+
 void Blackjack::startGame() {
     playerHand.clear();
     dealerHand.clear();
@@ -52,8 +163,8 @@ void Blackjack::cardsShowing(vector<string>& hand, double wagerAmount, int state
     // State 2 is the first split hand
     // State 3 is the second split hand
 
-    cout << "Dealer is showing: " << dealerHand[1] << " and one more card";
-    cout << "Dealer card value total: " << c.cardValue(dealerHand[1]);
+    cout << "Dealer is showing: " << dealerHand[1] << " and one more card" << endl;
+    cout << "Dealer card value total: " << c.cardValue(dealerHand[1]) << endl;
 
     if (c.cardValue(dealerHand[1]) == 1 && state == 0) {
         offerInsurance(wagerAmount);
@@ -76,7 +187,7 @@ void Blackjack::cardsShowing(vector<string>& hand, double wagerAmount, int state
     if (p.purse >= wagerAmount && state == 0)
         cout << "Double" << endl;
 
-    cout << "Purse: $" << p.purse;
+    cout << "Purse: $" << p.purse << endl;
 
     playerDecision(hand, wagerAmount, state);
 }

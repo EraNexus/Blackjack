@@ -8,7 +8,7 @@ using namespace std;
 
 int main() {
     Blackjack game;
-    game.startGame();
+    game.startup();
 
     return 0;
 }
