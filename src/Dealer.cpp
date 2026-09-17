@@ -7,6 +7,10 @@
 #include <iostream>
 #include <cstdlib>
 
+using namespace std;
+
+Card c;
+
 vector<string> Dealer::initialDeal(vector<string>& hand, vector<string>& deck) {
     // Dealer is dealt two cards
     for (int i = 0; i < 2; i++) {
@@ -33,9 +37,9 @@ vector<string> Dealer::stand(vector<string>& hand, vector<string>& deck) {
 }
 
 bool Dealer::isUnder17(vector<string>& hand) {
-    return cardValueTotal(hand) < 17;
+    return c.cardValueTotal(hand) < 17;
 }
 
 bool Dealer::isOver21(vector<string>& hand) {
-    return cardValueTotal(hand) > 21;
+    return c.cardValueTotal(hand) > 21;
 }

@@ -12,6 +12,9 @@ public:
     std::vector<std::string> splitHand;
     std::vector<std::string> deck;
 
+    bool firstHandBust;
+    bool secondHandBust;
+
     Card c;
     Player p;
     Dealer d;
@@ -20,8 +23,9 @@ public:
     double sideBet = 0.00;
 
     void startGame();
-    void cardsShowing(double wagerAmount, int state);
-    void playerDecision(double wagerAmount, int state);
+    void cardsShowing(std::vector<std::string>& hand, double wagerAmount, int state);
+    void playerDecision(std::vector<std::string>& hand, double wagerAmount, int state);
+    void dealerTurn(double wagerAmount);
     void offerInsurance(double wagerAmount);
     void push(double wagerAmount);
     void loss(double wagerAmount);

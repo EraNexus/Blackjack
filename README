@@ -1,0 +1,139 @@
+# Blackjack
+
+A command-line Blackjack game written in C++. This project recreates the basic gameplay of Blackjack while using object-oriented programming concepts to manage cards, players, the dealer, and game logic.
+
+## Features
+
+* Standard 52-card deck
+* Player and dealer hands
+* Hit and stand
+* Dealer automatically hits until reaching 17
+* Ace values adjust between 1 and 11
+* Blackjack detection with 3:2 payout
+* Double down
+* Insurance when the dealer shows an Ace
+* Splitting matching-value cards into two hands
+* Win, loss, and push detection
+* Player purse and wagering system
+* Option to play multiple rounds
+
+## Project Structure
+
+```text
+Blackjack/
+├── inc/
+│   ├── Blackjack.h
+│   ├── Card.h
+│   ├── Dealer.h
+│   └── Player.h
+│
+├── src/
+│   ├── Blackjack.cpp
+│   ├── Card.cpp
+│   ├── Dealer.cpp
+│   ├── Main.cpp
+│   └── Player.cpp
+│
+└── README.md
+```
+
+## Classes
+
+### Card
+
+Handles the deck and card-related operations, including:
+
+* Building a standard 52-card deck
+* Determining individual card values
+* Calculating hand totals
+* Handling Aces as either 1 or 11
+
+### Player
+
+Handles player actions, including:
+
+* Initial dealing
+* Hitting
+* Splitting
+* Doubling down
+* Tracking the player's purse
+
+### Dealer
+
+Handles dealer-specific behavior, including:
+
+* Initial dealing
+* Hitting
+* Determining whether the dealer must continue hitting
+* Detecting when the dealer busts
+
+### Blackjack
+
+Controls the overall game, including:
+
+* Starting rounds
+* Wagering
+* Displaying available actions
+* Processing player decisions
+* Dealer turns
+* Insurance
+* Split-hand gameplay
+* Determining wins, losses, pushes, and Blackjack payouts
+* Starting additional rounds
+
+## Building and Running
+
+The project can be compiled using `g++`.
+
+From the project's root directory:
+
+```bash
+g++ -std=c++17 -Wall -Iinc src/Main.cpp src/Card.cpp src/Player.cpp src/Dealer.cpp src/Blackjack.cpp -o blackjack.exe
+```
+
+Then run the program on Windows with:
+
+```bash
+./blackjack.exe
+```
+
+or in PowerShell:
+
+```powershell
+.\blackjack.exe
+```
+
+## How to Play
+
+At the beginning of each round, the player chooses a wager of at least $5. The player and dealer are then dealt two cards, with one of the dealer's cards hidden.
+
+Depending on the hand, the player may be able to:
+
+* **Hit** — Draw another card.
+* **Stand** — Keep the current hand and begin the dealer's turn.
+* **Double** — Double the wager, receive one additional card, and stand.
+* **Split** — Split two cards of equal value into separate hands.
+* **Insurance** — Place a side bet when the dealer's visible card is an Ace.
+
+The dealer draws cards until reaching at least 17. The player's hand is then compared against the dealer's hand to determine the result.
+
+## Payouts
+
+| Result     | Payout         |
+| ---------- | -------------- |
+| Normal Win | 1:1            |
+| Blackjack  | 3:2            |
+| Insurance  | 2:1            |
+| Push       | Wager returned |
+| Loss       | Wager lost     |
+
+## Technologies
+
+* C++
+* C++ Standard Library
+* Git / GitHub
+* g++
+
+## Status
+
+This project is currently under development. Core Blackjack gameplay has been implemented, with additional testing and improvements still in progress.
