@@ -34,6 +34,6 @@ public:
     void loss(double wagerAmount);
     void win(double wagerAmount);
     void blackjack(double wagerAmount);
-    void playAgain();
+    bool playAgain();
 };
 #endif
