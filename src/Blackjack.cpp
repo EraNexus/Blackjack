@@ -152,9 +152,36 @@ void Blackjack::startGame() {
     p.initialDeal(playerHand, deck);
     d.initialDeal(dealerHand, deck);
 
-    if (c.cardValueTotal(playerHand) == 21 
-            && c.cardValue(dealerHand[1]) != 1) {
-        blackjack(wagerAmount);
+    if (c.cardValueTotal(playerHand) == 21) {
+        
+
+        if (c.cardValue(dealerHand[1]) == 1) {
+            cardsShowing(playerHand, wagerAmount, 0);
+            return;
+        }
+
+        cout << endl;
+        cout << "===========================================" << endl;
+        cout << "               YOUR HAND" << endl;
+        cout << "===========================================" << endl;
+
+        for (size_t i = 0; i < playerHand.size(); i++) {
+            cout << "   " << playerHand[i] << endl;
+        }
+
+        cout << "   Total: " << c.cardValueTotal(playerHand) << endl;
+
+        if (c.cardValueTotal(dealerHand) == 21) {
+            cout << endl;
+            cout << "Dealer reveals: " << dealerHand[0] << endl;
+            cout << "Dealer also has Blackjack!" << endl;
+
+            result(wagerAmount, "push");
+        }
+        else {
+            result(wagerAmount, "blackjack");
+        }
+
         return;
     }
 
@@ -167,31 +194,42 @@ void Blackjack::cardsShowing(vector<string>& hand, double wagerAmount, int state
     // State 2 is the first split hand
     // State 3 is the second split hand
 
-    cout << "Dealer is showing: " << dealerHand[1] << " and one more card" << endl;
-    cout << "Dealer card value total: " << c.cardValue(dealerHand[1]) << endl;
+    cout << endl;
+    cout << "===========================================" << endl;
+    cout << "                YOUR TURN" << endl;
+    cout << "===========================================" << endl;
+    cout << "Dealer:" << endl;
+    cout << "   " << dealerHand[1] << endl;
+    cout << "   [Hidden Card]" << endl;
+    cout << "   Visible Total: " << c.cardValue(dealerHand[1]) << endl;
+    cout << endl;
 
     if (c.cardValue(dealerHand[1]) == 1 && state == 0) {
         offerInsurance(wagerAmount);
         return;
     }
 
-    cout << "You are showing: " << endl;
+    cout << "Your Hand: " << endl;
     for (size_t i = 0; i < hand.size(); i++) {
-        cout << hand[i] << endl;
+        cout << "   " << hand[i] << endl;
     }
+    
+    cout << "   Total: " << c.cardValueTotal(hand) << endl; 
+    cout << endl;
 
-    cout << "Options available: " << endl;
-    cout << "Hit" << endl;
-    cout << "Stand" << endl;
+    cout << "-------------------------------------------" << endl;
+    cout << "Available Actions: HIT | STAND";
 
     if ((c.cardValue(hand[0]) == c.cardValue(hand[1])) 
         && state == 0
         && p.purse >= wagerAmount)
-        cout << "Split" << endl;
+        cout << " | SPLIT";
     if (p.purse >= wagerAmount && state == 0)
-        cout << "Double" << endl;
+        cout << " | DOUBLE";
 
+    cout << endl;
     cout << "Purse: $" << p.purse << endl;
+    cout << "-------------------------------------------" << endl;
 
     playerDecision(hand, wagerAmount, state);
 }
@@ -199,10 +237,11 @@ void Blackjack::cardsShowing(vector<string>& hand, double wagerAmount, int state
 void Blackjack::playerDecision(vector<string>& hand, double wagerAmount, int state) {
     string decision;
 
-    cout << "What is your decision?" << endl;
+    cout << endl;
+    cout << "Decision: ";
     cin >> decision;
 
-    if ((decision == "Hit") || (decision == "hit")) {
+    if ((decision == "Hit") || (decision == "hit") || (decision == "HIT")) {
         p.hit(hand, deck);
         
         if (p.isOver21(hand)) {
@@ -216,15 +255,14 @@ void Blackjack::playerDecision(vector<string>& hand, double wagerAmount, int sta
                 cout << "Second hand busted!" << endl;
                 
                 if (firstHandBust) {
-                    cout << "Both hands lost" << endl;
-                    cout << "Purse: $" << p.purse << endl;
+                    splitResult("BUST", "BUST", wagerAmount);
                 }
                 else {
                     dealerTurn(wagerAmount);
                 }
             }
             else {
-                loss(wagerAmount);
+                result(wagerAmount, "loss");
             }
         }
         else {
@@ -234,13 +272,13 @@ void Blackjack::playerDecision(vector<string>& hand, double wagerAmount, int sta
                 cardsShowing(hand, wagerAmount, state);
         }
     }
-    else if ((decision == "Stand") || (decision == "stand")) {
+    else if ((decision == "Stand") || (decision == "stand") || (decision == "STAND")) {
         if (state == 2)
             cardsShowing(splitHand, wagerAmount, 3);
         else
             dealerTurn(wagerAmount);
     }
-    else if (((decision == "Split") || (decision == "split"))
+    else if (((decision == "Split") || (decision == "split") || (decision == "SPLIT"))
             && state == 0
             && p.purse >= wagerAmount
             && c.cardValue(hand[0]) == c.cardValue(hand[1])) {
@@ -249,14 +287,14 @@ void Blackjack::playerDecision(vector<string>& hand, double wagerAmount, int sta
 
         cardsShowing(playerHand, wagerAmount, 2);
     }
-    else if (((decision == "Double") || (decision == "double"))
+    else if (((decision == "Double") || (decision == "double") || (decision == "DOUBLE"))
                 && state == 0
                 && p.purse >= wagerAmount) {
             p.purse -= wagerAmount;
             p.doubleDown(hand, deck);
 
             if (p.isOver21(hand))
-                loss(wagerAmount * 2);
+                result(wagerAmount * 2, "loss");
             else
                 dealerTurn(wagerAmount * 2);
     }
@@ -267,59 +305,80 @@ void Blackjack::playerDecision(vector<string>& hand, double wagerAmount, int sta
 }
 
 void Blackjack::dealerTurn(double wagerAmount) {
-    cout << "Dealer reveals: " << dealerHand[0] << endl;
+    cout << endl;
+    cout << "===========================================" << endl;
+    cout << "              DEALER'S TURN" << endl;
+    cout << "===========================================" << endl;
+    cout << endl;
+
+    cout << "Dealer reveals: " << endl;
+    cout << "   " << dealerHand[0] << endl;
+    cout << endl;
+
+    cout << "Dealer Hand:" << endl;
+    cout << "   " << dealerHand[0] << endl;
+    cout << "   " << dealerHand[1] << endl;
+    cout << "   Total: " << c.cardValueTotal(dealerHand) << endl;
+    cout << endl;
 
     while (d.isUnder17(dealerHand)) {
         d.hit(dealerHand, deck);
-        cout << "Dealer hits: " << dealerHand.back() << endl;
+        
+        cout << "Dealer hits:" << endl;
+        cout << "   " << dealerHand.back() << endl;
+        cout << "   Total: " << c.cardValueTotal(dealerHand) << endl;
+        cout << endl; 
     }
 
     if (splitHand.empty()) {
         if (d.isOver21(dealerHand))
-            win(wagerAmount);
+            result(wagerAmount, "win");
         else if (c.cardValueTotal(playerHand) > c.cardValueTotal(dealerHand))
-            win(wagerAmount);
+            result(wagerAmount, "win");
         else if (c.cardValueTotal(playerHand) < c.cardValueTotal(dealerHand))
-            loss(wagerAmount);
+            result(wagerAmount, "loss");
         else
-            push(wagerAmount);
+            result(wagerAmount, "push");
 
         return;
     }
 
+    string firstResult;
+    string secondResult;
+
     if (firstHandBust) {
-        cout << "First hand busted" << endl;
+        firstResult = "BUST";
     }
     else if (d.isOver21(dealerHand) ||
             c.cardValueTotal(playerHand) > c.cardValueTotal(dealerHand)) {
-        cout << "First hand wins" << endl;
+        firstResult = "WIN";
         p.purse += 2 * wagerAmount;
     }
     else if (c.cardValueTotal(playerHand) < c.cardValueTotal(dealerHand)) {
-        cout << "First hand loses" << endl;
+        firstResult = "LOSS";
     }
     else {
-        cout << "First hand pushes" << endl;
+        firstResult = "PUSH";
         p.purse += wagerAmount;
     }
 
     if (secondHandBust) {
-        cout << "Second hand busted" << endl;
+        secondResult = "BUST";
     }
     else if (d.isOver21(dealerHand) ||
             c.cardValueTotal(splitHand) > c.cardValueTotal(dealerHand)) {
-        cout << "Second hand wins" << endl;
+        secondResult = "WIN";
         p.purse += 2 * wagerAmount;
     }
     else if (c.cardValueTotal(splitHand) < c.cardValueTotal(dealerHand)) {
-        cout << "Second hand loses" << endl;
+        secondResult = "LOSS";
     }
     else {
-        cout << "Second hand pushes" << endl;
+        secondResult = "PUSH";
         p.purse += wagerAmount;
     }
 
-    cout << "Purse: $" << p.purse << endl;
+    splitResult(firstResult, secondResult, wagerAmount);    
 }
 
 void Blackjack::offerInsurance(double wagerAmount) {
@@ -361,42 +420,102 @@ void Blackjack::offerInsurance(double wagerAmount) {
         }
 
         if (c.cardValueTotal(playerHand) == 21)
-            push(wagerAmount);
+            result(wagerAmount, "push");
         else
-            loss(wagerAmount);
+            result(wagerAmount, "loss");
     }
     else if (c.cardValueTotal(playerHand) == 21) {
-        blackjack(wagerAmount);
+        result(wagerAmount, "blackjack");
     }
     else {
         cardsShowing(playerHand, wagerAmount, 1);
     }
 }
 
-void Blackjack::push(double wagerAmount) {
-    p.purse += wagerAmount;
+void Blackjack::result(double wagerAmount, string outcome) {
+    double payout = 0;
 
-    cout << "This game resulted in a push, so all wagers are returned" << endl;
-    cout << "Purse: $" << p.purse << endl;
+    cout << endl;
+    cout << "===========================================" << endl;
+    cout << "              ROUND RESULT" << endl;
+    cout << "===========================================" << endl;
+    cout << endl;
+
+    if (outcome == "win") {
+        payout = 2 * wagerAmount;
+        p.purse += payout;
+
+        cout << "                  YOU WIN!" << endl;
+        cout << endl;
+        cout << "   Result:  Win" << endl;
+        cout << "   Payout:  1:1" << endl;
+    }
+    else if (outcome == "loss") {
+        cout << "                 YOU LOSE" << endl;
+        cout << endl;
+        cout << "   Result:  Loss" << endl;
+        cout << "   Payout:  $0" << endl;
+    }
+    else if (outcome == "push") {
+        payout = wagerAmount;
+        p.purse += payout;
+
+        cout << "                    PUSH" << endl;
+        cout << endl;
+        cout << "   Result:  Push" << endl;
+        cout << "   Wager returned" << endl;
+    }
+    else if (outcome == "blackjack") {
+        payout = 2.5 * wagerAmount;
+        p.purse += payout;
+
+        cout << "                 BLACKJACK!" << endl;
+        cout << endl;
+        cout << "   Result:  Blackjack" << endl;
+        cout << "   Payout:  3:2" << endl;
+    }
+    else {
+        cout << "ERROR: Invalid game result" << endl;
+        return;
+    }
+
+    cout << endl;
+    cout << "-------------------------------------------" << endl;
+    cout << "   Wager:    $" << wagerAmount << endl;
+    cout << "   Returned: $" << payout << endl;
+    cout << "   Purse:    $" << p.purse << endl;
+    cout << "-------------------------------------------" << endl;
+    cout << endl;
 }
 
-void Blackjack::loss(double wagerAmount) {
-    cout << "This game resulted in a loss, so you lost your wager" << endl;
-    cout << "Purse: $" << p.purse << endl;
-}
+void Blackjack::splitResult(string firstResult, string secondResult,
+                            double wagerAmount) {
+    cout << endl;
+    cout << "===========================================" << endl;
+    cout << "              ROUND RESULT" << endl;
+    cout << "===========================================" << endl;
+    cout << endl;
 
-void Blackjack::win(double wagerAmount) {
-    p.purse += 2 * wagerAmount;
+    cout << "              SPLIT RESULTS" << endl;
+    cout << endl;
 
-    cout << "This game resulted in a win, which pays 1:1" << endl;
-    cout << "Purse: $" << p.purse << endl;
-}
+    cout << "   Dealer: " << c.cardValueTotal(dealerHand);
 
-void Blackjack::blackjack(double wagerAmount) {
-    p.purse += 2.5 * wagerAmount;
-    
-    cout << "This game resulted in a blackjack, which pays 3:2" << endl;
-    cout << "Purse: $" << p.purse << endl;
+    if (d.isOver21(dealerHand))
+        cout << " (BUST)";
+
+    cout << endl;
+
+    cout << "   Hand 1: " << c.cardValueTotal(playerHand) << "  -> " << firstResult << endl;
+
+    cout << "   Hand 2: " << c.cardValueTotal(splitHand) << "  -> " << secondResult << endl;
+
+    cout << endl;
+    cout << "-------------------------------------------" << endl;
+    cout << "   Wager per Hand: $" << wagerAmount << endl;
+    cout << "   Purse:          $" << p.purse << endl;
+    cout << "-------------------------------------------" << endl;
+    cout << endl;
 }
 
 bool Blackjack::playAgain() {

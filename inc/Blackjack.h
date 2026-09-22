@@ -1,6 +1,8 @@
 #ifndef BLACKJACK_H
 #define BLACKJACK_H
 
+#include <string>
+
 #include "Card.h"
 #include "Dealer.h"
 #include "Player.h"
@@ -30,10 +32,8 @@ public:
     void playerDecision(std::vector<std::string>& hand, double wagerAmount, int state);
     void dealerTurn(double wagerAmount);
     void offerInsurance(double wagerAmount);
-    void push(double wagerAmount);
-    void loss(double wagerAmount);
-    void win(double wagerAmount);
-    void blackjack(double wagerAmount);
+    void result(double wagerAmount, std::string outcome);
+    void splitResult(std::string firstResult, std::string secondResult, double wagerAmount);
     bool playAgain();
 };
 #endif
