@@ -19,7 +19,7 @@ A command-line Blackjack game written in C++. This project recreates the basic g
 
 ## Project Structure
 
-```text
+```
 Blackjack/
 ├── inc/
 │   ├── Blackjack.h
